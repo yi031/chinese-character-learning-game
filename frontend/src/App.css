@@ -1,0 +1,224 @@
+body {
+  font-family: "Roboto", sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
+}
+
+.App {
+  text-align: center;
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 20px;
+  min-height: 100vh;
+}
+
+/* Start Screen Styles */
+.start-screen {
+  background-color: white;
+  border-radius: 15px; /* Increased border radius */
+  padding: 40px; /* Increased padding */
+  box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+  margin-top: 60px; /* More space at top */
+}
+
+.start-screen h1 {
+  color: #d32f2f;
+  font-size: 48px; /* Larger title */
+  margin-bottom: 40px; /* More space below title */
+}
+
+.instructions {
+  text-align: left;
+  background-color: #f9f9f9;
+  padding: 30px; /* More padding */
+  border-radius: 12px; /* Rounder corners */
+  margin-bottom: 40px; /* More space below */
+  font-size: 20px; /* Larger text */
+}
+
+.instructions h2 {
+  color: #333;
+  margin-top: 0;
+  font-size: 32px; /* Larger heading */
+}
+
+.instructions ol {
+  padding-left: 30px; /* More indentation */
+}
+
+.instructions li {
+  margin-bottom: 15px; /* More space between items */
+  line-height: 1.6; /* Slightly increased line height */
+}
+
+.tip {
+  font-style: italic;
+  color: #d32f2f;
+  margin-top: 25px; /* More space above tip */
+  font-size: 22px; /* Larger tip text */
+}
+
+.start-button {
+  background-color: #d32f2f;
+  color: white;
+  border: none;
+  padding: 20px 60px; /* Larger button */
+  font-size: 24px; /* Larger text */
+  border-radius: 40px; /* Rounder button */
+  cursor: pointer;
+  transition: background-color 0.3s, transform 0.2s;
+  margin-top: 20px; /* Added space above button */
+  font-weight: bold; /* Make text bolder */
+  letter-spacing: 1px; /* Spread letters slightly */
+}
+
+.start-button:hover {
+  background-color: #b71c1c;
+  transform: scale(1.05); /* Slight grow effect on hover */
+}
+
+/* Game Screen Styles */
+.game-screen {
+  background-color: white;
+  border-radius: 15px;
+  padding: 40px; /* More padding */
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.15); /* Stronger shadow */
+  margin-top: 30px; /* Added space at top */
+}
+
+.puzzle-title {
+  color: #d32f2f;
+  font-size: 36px; /* Larger title */
+  margin-bottom: 25px;
+  border-bottom: 3px solid #f0f0f0; /* Thicker border */
+  padding-bottom: 20px; /* More space below border */
+}
+
+.puzzle-prompt {
+  background-color: #f9f9f9;
+  padding: 30px; /* More padding */
+  border-radius: 12px; /* Rounder corners */
+  margin-bottom: 40px; /* More space below */
+  text-align: left;
+}
+
+.hint {
+  font-size: 24px; /* Much larger hint text */
+  line-height: 1.7; /* More line spacing */
+  margin-bottom: 25px; /* Space below hint */
+}
+
+.image-container {
+  display: flex;
+  justify-content: center;
+  gap: 30px; /* More space between images */
+  margin-top: 30px; /* More space above images */
+}
+
+.hint-image {
+  max-width: 250px; /* Larger images */
+  max-height: 250px; /* Larger images */
+  border-radius: 12px; /* Rounder corners */
+  border: 2px solid #ddd; /* Thicker border */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Added shadow to images */
+}
+
+.user-input-area {
+  margin-top: 40px; /* More space above */
+  padding: 35px; /* More padding */
+  background-color: #f0f7ff;
+  border-radius: 12px; /* Rounder corners */
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08); /* Added subtle shadow */
+}
+
+.user-input-area h3 {
+  font-size: 28px; /* Larger heading */
+  margin-bottom: 25px; /* Space below heading */
+}
+
+.radical-display {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-top: 30px;
+  font-size: 32px; /* Larger text */
+}
+
+.radical {
+  width: 120px; /* Larger boxes */
+  height: 120px; /* Larger boxes */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: white;
+  border: 3px solid #ddd; /* Thicker border */
+  border-radius: 12px; /* Rounder corners */
+  margin: 0 15px; /* More space between elements */
+  font-size: 40px; /* Larger text inside */
+}
+
+.radical-plus,
+.radical-equals {
+  font-size: 40px; /* Larger symbols */
+  font-weight: bold;
+  margin: 0 20px; /* More space around symbols */
+}
+
+.character-result {
+  width: 150px; /* Larger result box */
+  height: 150px; /* Larger result box */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #ffebee;
+  border: 3px solid #d32f2f; /* Thicker border */
+  border-radius: 12px; /* Rounder corners */
+  font-size: 60px; /* Much larger character */
+}
+
+.feedback-area {
+  margin-top: 40px; /* More space above */
+  padding: 30px; /* More padding */
+  border-radius: 12px; /* Rounder corners */
+  transition: all 0.3s;
+}
+
+.feedback-area.correct {
+  background-color: #e8f5e9;
+  border: 3px solid #4caf50; /* Thicker border */
+}
+
+.feedback-area.incorrect {
+  background-color: #ffebee;
+  border: 3px solid #d32f2f; /* Thicker border */
+}
+
+.feedback-area h3 {
+  font-size: 32px; /* Larger feedback text */
+  margin-bottom: 15px;
+}
+
+.feedback-area p {
+  font-size: 22px; /* Larger paragraph text */
+  margin-bottom: 20px;
+}
+
+.next-button {
+  background-color: #4caf50;
+  color: white;
+  border: none;
+  padding: 18px 40px; /* Larger button */
+  font-size: 20px; /* Larger text */
+  border-radius: 40px; /* Rounder button */
+  cursor: pointer;
+  margin-top: 20px; /* More space above button */
+  transition: background-color 0.3s, transform 0.2s;
+  font-weight: bold; /* Bolder text */
+  letter-spacing: 1px; /* Spread letters */
+}
+
+.next-button:hover {
+  background-color: #388e3c;
+  transform: scale(1.05); /* Slight grow effect */
+}

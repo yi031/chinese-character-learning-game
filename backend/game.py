@@ -1,3 +1,4 @@
+import serial
 
 radicals_left = ["氵", "扌", "亻", "讠", "木"]
 radicals_right = ["白", "目", "土", "可", "每", "台", "工", "木"]
@@ -7,10 +8,10 @@ radicals_right = ["白", "目", "土", "可", "每", "台", "工", "木"]
 
 configuration = {
     (1, 1, 0, 0): "氵",
-    (1, 0, 1, 0): "扌",
-    (1, 0, 0, 1): "亻",
-    (0, 1, 1, 0): "讠",
-    (0, 1, 0, 1): "木",
+    (1, 0, 1, 0): "木",
+    (1, 0, 0, 1): "讠",
+    (0, 1, 1, 0): "亻",
+    (0, 1, 0, 1): "扌",
     (0, 0, 1, 1): "白",
     (0, 1, 1, 1): "目",
     (1, 0, 1, 1): "土",
@@ -61,7 +62,7 @@ class RadicalTileGame:
         self.current_right_radical = None
         self.last_detected_config = None
 
-    def process_sensor_input(self, sensor_values):
+    def process_sensor_input(self, sensor_values, is_left):
         """
         Process the sensor input from the 4 spots on the electric board.
 
@@ -78,19 +79,19 @@ class RadicalTileGame:
         # Check if the configuration is valid
         if sensor_config in configuration:
             detected_radical = configuration[sensor_config]
-            self.update_current_radicals(detected_radical)
+            self.update_current_radicals(detected_radical, is_left)
             self.last_detected_config = sensor_config
             return detected_radical
         else:
-            print(f"Unknown configuration: {sensor_config}")
+            print(f"Unknown configuration ({'L' if is_left else 'R'}): {sensor_config}")
             return None
 
-    def update_current_radicals(self, detected_radical):
+    def update_current_radicals(self, detected_radical, is_left):
         """Update the current left or right radical based on the detected radical."""
-        if detected_radical in radicals_left:
+        if is_left:
             self.current_left_radical = detected_radical
             print(f"Left radical set to: {detected_radical}")
-        elif detected_radical in radicals_right:
+        else:
             self.current_right_radical = detected_radical
             print(f"Right radical set to: {detected_radical}")
 
@@ -131,43 +132,84 @@ def main():
     print("Place radical tiles on the electric board to form Chinese characters.")
 
     # Test with some simulated sensor inputs
-    test_configs = [
-        (1, 1, 0, 0),  # 氵 (water radical)
-        (0, 0, 1, 1),  # 白 (white radical)
-        (1, 0, 1, 0),  # 扌 (hand radical)
-        (0, 1, 1, 1),  # 目 (eye radical)
-    ]
+    # test_configs = [
+    #     (1, 1, 0, 0),  # 氵 (water radical)
+    #     (0, 0, 1, 1),  # 白 (white radical)
+    #     (1, 0, 1, 0),  # 扌 (hand radical)
+    #     (0, 1, 1, 1),  # 目 (eye radical)
+    # ]
 
-    for config in test_configs:
-        print("\nDetected configuration:", config)
-        detected_radical = game.process_sensor_input(config)
-        if detected_radical:
-            print(f"Detected radical: {detected_radical}")
+    # for config in test_configs:
+    #     print("\nDetected configuration:", config)
+    #     detected_radical = game.process_sensor_input(config)
+    #     if detected_radical:
+    #         print(f"Detected radical: {detected_radical}")
+
+    # Turn this off to manually enter digits.
+    DIGITAL_MODE = False
 
     # Interactive mode
     print("\nEntering interactive mode...")
-    print("Enter 4 binary digits (0 or 1) separated by spaces, or 'q' to quit, 'r' to reset:")
 
-    while True:
-        user_input = input("> ").strip().lower()
 
-        if user_input == 'q':
-            break
-        elif user_input == 'r':
-            game.reset()
-            continue
+    if DIGITAL_MODE:
+        print("Enter 4 binary digits (0 or 1) separated by spaces, or 'q' to quit, 'r' to reset:")
+        while True:
+            user_input = input("> ").strip().lower()
 
-        try:
-            sensor_values = [int(val) for val in user_input.split()]
-            if len(sensor_values) == 4 and all(val in [0, 1] for val in sensor_values):
+            if user_input == 'q':
+                break
+            elif user_input == 'r':
+                game.reset()
+                continue
+
+            if DIGITAL_MODE:
+                try:
+                    sensor_values = [int(val) for val in user_input.split()]
+                    if len(sensor_values) == 4 and all(val in [0, 1] for val in sensor_values):
+                        detected_radical = game.process_sensor_input(
+                            tuple(sensor_values))
+                        if detected_radical:
+                            print(f"Detected radical: {detected_radical}")
+                    else:
+                        print("Invalid input. Enter exactly 4 binary digits (0 or 1).")
+                except ValueError:
+                    print("Invalid input. Enter binary digits separated by spaces.")
+    else:
+        ser = serial.Serial('/dev/cu.usbmodem1101', 115200, timeout=0.1) # COM port, Baudrate, 1/timeout is the frequency at which the port is read
+        
+        while True:
+            data = ser.readline().decode().strip()
+            if data:
+                data = int(data)
+                # print(data)
+                left_data = (
+                    (data & (1 << 7)) >> 7,
+                    (data & (1 << 6)) >> 6,
+                    (data & (1 << 5)) >> 5,
+                    (data & (1 << 4)) >> 4
+                )
+                right_data = (
+                    (data & (1 << 3)) >> 3,
+                    (data & (1 << 2)) >> 2,
+                    (data & (1 << 1)) >> 1,
+                    (data & (1 << 0)) >> 0
+                )
+                # print('left', left_data, 'right', right_data)
+
                 detected_radical = game.process_sensor_input(
-                    tuple(sensor_values))
+                    tuple(left_data), True)
                 if detected_radical:
                     print(f"Detected radical: {detected_radical}")
-            else:
-                print("Invalid input. Enter exactly 4 binary digits (0 or 1).")
-        except ValueError:
-            print("Invalid input. Enter binary digits separated by spaces.")
+
+                detected_radical = game.process_sensor_input(
+                    tuple(right_data), False)
+                if detected_radical:
+                    print(f"Detected radical: {detected_radical}")
+
+                print()
+
+
 
 
 if __name__ == "__main__":

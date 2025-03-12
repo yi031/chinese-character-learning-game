@@ -6,6 +6,8 @@ import StartScreen from "./components/StartScreen";
 import GameScreen from "./components/GameScreen";
 import puzzleData from "./data/puzzleData";
 
+let websocket = null;
+
 function App() {
   const [gameStarted, setGameStarted] = useState(false);
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
@@ -28,6 +30,8 @@ function App() {
       setCurrentPuzzleIndex(currentPuzzleIndex + 1);
       setGameState("pending");
       setCurrentUserInput(null);
+
+      websocket.send('{ "type": "reset"}');
     } else {
       // Game completed
       alert("Congratulations! You've completed all puzzles!");
@@ -46,7 +50,7 @@ function App() {
 
     const currentPuzzle = randomizedPuzzles[currentPuzzleIndex];
     console.log(match);
-    if (match.character === currentPuzzle.character) {
+    if (match && match.character === currentPuzzle.character) {
       setGameState("correct");
     } else {
       setGameState("incorrect");
@@ -58,7 +62,7 @@ function App() {
   useEffect(() => {
     // Example of how to connect to backend
     const connectToBackend = () => {
-      const websocket = new WebSocket("ws://localhost:8765");
+      websocket = new WebSocket("ws://localhost:8765");
 
       websocket.addEventListener("message", (event) => {
         console.log("ping!");

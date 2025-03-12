@@ -1,4 +1,5 @@
 import serial
+import asyncio
 
 radicals_left = ["氵", "扌", "亻", "讠", "木"]
 radicals_right = ["白", "目", "土", "可", "每", "台", "工", "木"]
@@ -123,6 +124,40 @@ class RadicalTileGame:
 
 # Main function for testing
 
+async def run(game):
+    ser = serial.Serial('/dev/cu.usbmodem1101', 115200, timeout=0.1) # COM port, Baudrate, 1/timeout is the frequency at which the port is read
+        
+    while True:
+        data = ser.readline().decode().strip()
+        if data:
+            data = int(data)
+            # print(data)
+            left_data = (
+                (data & (1 << 7)) >> 7,
+                (data & (1 << 6)) >> 6,
+                (data & (1 << 5)) >> 5,
+                (data & (1 << 4)) >> 4
+            )
+            right_data = (
+                (data & (1 << 3)) >> 3,
+                (data & (1 << 2)) >> 2,
+                (data & (1 << 1)) >> 1,
+                (data & (1 << 0)) >> 0
+            )
+            # print('left', left_data, 'right', right_data)
+
+            detected_radical = game.process_sensor_input(
+                tuple(left_data), True)
+            if detected_radical:
+                print(f"Detected radical: {detected_radical}")
+
+            detected_radical = game.process_sensor_input(
+                tuple(right_data), False)
+            if detected_radical:
+                print(f"Detected radical: {detected_radical}")
+
+            print()
+            await asyncio.sleep(0.4)
 
 def main():
     game = RadicalTileGame()

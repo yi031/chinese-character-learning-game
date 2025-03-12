@@ -6,7 +6,7 @@
 import asyncio
 import json
 import websockets
-from game import RadicalTileGame  # Import the game logic
+from game import RadicalTileGame, run  # Import the game logic
 
 # Create a game instance
 game = RadicalTileGame()
@@ -14,7 +14,7 @@ game = RadicalTileGame()
 # Store active WebSocket connections
 connected_clients = set()
 
-async def handle_client(websocket, path):
+async def handle_client(websocket):
     """Handle a WebSocket connection from the React frontend."""
     # Register the client
     connected_clients.add(websocket)
@@ -26,6 +26,11 @@ async def handle_client(websocket, path):
             "rightRadical": game.current_right_radical,
             "lastDetectedConfig": game.last_detected_config
         }))
+
+        asyncio.create_task(run(game))
+
+        # Start sensor monitor
+        sensor_task = asyncio.create_task(sensor_monitor())
         
         # Process messages from the client
         async for message in websocket:
@@ -88,6 +93,7 @@ async def sensor_monitor():
     This function would be modified to read from your actual hardware.
     """
     while True:
+        # print('sensor monitor')
         # Placeholder for hardware sensor reading logic
         # In a real implementation, this would read from GPIO pins or other hardware interface
         # For example:
@@ -95,23 +101,24 @@ async def sensor_monitor():
         # detected_radical = game.process_sensor_input(sensor_values)
         
         # For demo, we're just waiting without actual sensor reading
-        await asyncio.sleep(0.1)
+        # await asyncio.sleep(0.1)
         
         # After actual sensor reading, you would broadcast the update
-        # await broadcast_game_state()
+        await broadcast_game_state()
+        await asyncio.sleep(0.4)
 
 async def main():
     """Start the WebSocket server and sensor monitoring."""
     # Start WebSocket server
-    server = await websockets.serve(handle_client, "localhost", 8765)
-    
-    # Start sensor monitor
-    sensor_task = asyncio.create_task(sensor_monitor())
-    
-    print("WebSocket server started on ws://localhost:8765")
-    
-    # Keep the server running
-    await asyncio.Future()  # Run forever
+    async with websockets.serve(handle_client, "localhost", 8765) as server:
+
+        
+        print("WebSocket server started on ws://localhost:8765")
+        
+        # Keep the server running
+        # await asyncio.Future()  # Run forever
+
+        await server.serve_forever()
 
 if __name__ == "__main__":
     asyncio.run(main())

@@ -11,9 +11,12 @@ function App() {
   const [currentPuzzleIndex, setCurrentPuzzleIndex] = useState(0);
   const [currentUserInput, setCurrentUserInput] = useState(null);
   const [gameState, setGameState] = useState("pending"); // pending, correct, incorrect
+  const [randomizedPuzzles, setRandomizedPuzzles] = useState([]);
 
   // Start the game
   const startGame = () => {
+    const shuffled = [...puzzleData].sort(() => Math.random() - 0.5);
+    setRandomizedPuzzles(shuffled);
     setGameStarted(true);
     setCurrentPuzzleIndex(0);
     setGameState("pending");
@@ -21,7 +24,7 @@ function App() {
 
   // Move to the next puzzle
   const nextPuzzle = () => {
-    if (currentPuzzleIndex < puzzleData.length - 1) {
+    if (currentPuzzleIndex < randomizedPuzzles.length - 1) {
       setCurrentPuzzleIndex(currentPuzzleIndex + 1);
       setGameState("pending");
       setCurrentUserInput(null);
@@ -37,11 +40,11 @@ function App() {
     setCurrentUserInput(left + right);
 
     // TODO: could optimize this search
-    const match = puzzleData.find(
+    const match = randomizedPuzzles.find(
       (entry) => entry.components[0] === left && entry.components[1] === right
     );
 
-    const currentPuzzle = puzzleData[currentPuzzleIndex];
+    const currentPuzzle = randomizedPuzzles[currentPuzzleIndex];
     console.log(match);
     if (match.character === currentPuzzle.character) {
       setGameState("correct");
@@ -93,7 +96,7 @@ function App() {
         <StartScreen onStart={startGame} />
       ) : (
         <GameScreen
-          puzzle={puzzleData[currentPuzzleIndex]}
+          puzzle={randomizedPuzzles[currentPuzzleIndex]}
           gameState={gameState}
           onNext={nextPuzzle}
           userInput={currentUserInput}

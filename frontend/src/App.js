@@ -49,10 +49,10 @@ function App() {
     );
 
     const currentPuzzle = randomizedPuzzles[currentPuzzleIndex];
-    console.log(match);
+
     if (match && match.character === currentPuzzle.character) {
       setGameState("correct");
-    } else {
+    } else if (left !== " " && right !== " ") {
       setGameState("incorrect");
     }
   };
@@ -65,9 +65,7 @@ function App() {
       websocket = new WebSocket("ws://localhost:8765");
 
       websocket.addEventListener("message", (event) => {
-        console.log("ping!");
         const data = JSON.parse(event.data);
-        console.log(data);
         const left = data.leftRadical ?? " ";
         const right = data.rightRadical ?? " ";
         // setCurrentUserInput(left + right);

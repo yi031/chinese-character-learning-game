@@ -128,14 +128,14 @@ const puzzleData = [
     hint: "Like someone frozen on stage, suddenly forgetting their lines in front of a crowd.",
     imageUrls: [],
   },
-  {
-    character: "仜",
-    pinyin: "hóng",
-    meaning: "huge, vast",
-    components: ["亻", "工"],
-    hint: "A person standing before a massive construction project, feeling small yet amazed.",
-    // imageUrls: ["/images/worker.jpeg"],
-  },
+  // {
+  //   character: "仜",
+  //   pinyin: "hóng",
+  //   meaning: "huge, vast",
+  //   components: ["亻", "工"],
+  //   hint: "A person standing before a massive construction project, feeling small yet amazed.",
+  //   // imageUrls: ["/images/worker.jpeg"],
+  // },
   {
     character: "诃",
     pinyin: "hē",

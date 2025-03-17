@@ -63,6 +63,7 @@ class RadicalTileGame:
     def __init__(self):
         self.current_left_radical = None
         self.current_right_radical = None
+        self.left_radical_buffer = [None for i in range(0, BUFFER_SIZE)]
         self.right_radical_buffer = [None for i in range(0, BUFFER_SIZE)]
         self.last_detected_config = None
 
@@ -79,21 +80,21 @@ class RadicalTileGame:
         """
         # Convert sensor values to a tuple for dictionary lookup
         sensor_config = tuple(sensor_values)
+        buffer = self.left_radical_buffer if is_left else self.right_radical_buffer
             
         # Check if the configuration is valid
         if sensor_config in configuration:
             detected_radical = configuration[sensor_config]
             # TODO: This is a memory leak if we don't clear out the buffer ever
-            if not is_left:
-                self.right_radical_buffer.append(detected_radical)
-            if all(x == detected_radical for x in self.right_radical_buffer[-5:]):
+            
+            buffer.append(detected_radical)
+            if all(x == detected_radical for x in buffer[-5:]):
                 self.update_current_radicals(detected_radical, is_left)
             self.last_detected_config = sensor_config
             return detected_radical
         else:
             print(f"Unknown configuration ({'L' if is_left else 'R'}): {sensor_config}")
-            if not is_left:
-                self.right_radical_buffer.append(None)
+            buffer.append(None)
             return None
 
     def update_current_radicals(self, detected_radical, is_left):

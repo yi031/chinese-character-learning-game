@@ -105,7 +105,7 @@ async def sensor_monitor():
         
         # After actual sensor reading, you would broadcast the update
         await broadcast_game_state()
-        await asyncio.sleep(0.21)
+        await asyncio.sleep(0.1)
 
 async def main():
     """Start the WebSocket server and sensor monitoring."""

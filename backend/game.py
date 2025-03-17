@@ -1,5 +1,6 @@
 import serial
 import asyncio
+import datetime
 
 radicals_left = ["氵", "扌", "亻", "讠", "木"]
 radicals_right = ["白", "目", "土", "可", "每", "台", "工", "木"]
@@ -56,11 +57,13 @@ valid_characters = {
     ("木", "工"): "杠"
 }
 
+BUFFER_SIZE = 5
 
 class RadicalTileGame:
     def __init__(self):
         self.current_left_radical = None
         self.current_right_radical = None
+        self.right_radical_buffer = [None for i in range(0, BUFFER_SIZE)]
         self.last_detected_config = None
 
     def process_sensor_input(self, sensor_values, is_left):
@@ -76,15 +79,21 @@ class RadicalTileGame:
         """
         # Convert sensor values to a tuple for dictionary lookup
         sensor_config = tuple(sensor_values)
-
+            
         # Check if the configuration is valid
         if sensor_config in configuration:
             detected_radical = configuration[sensor_config]
-            self.update_current_radicals(detected_radical, is_left)
+            # TODO: This is a memory leak if we don't clear out the buffer ever
+            if not is_left:
+                self.right_radical_buffer.append(detected_radical)
+            if all(x == detected_radical for x in self.right_radical_buffer[-5:]):
+                self.update_current_radicals(detected_radical, is_left)
             self.last_detected_config = sensor_config
             return detected_radical
         else:
             print(f"Unknown configuration ({'L' if is_left else 'R'}): {sensor_config}")
+            if not is_left:
+                self.right_radical_buffer.append(None)
             return None
 
     def update_current_radicals(self, detected_radical, is_left):
@@ -156,8 +165,10 @@ async def run(game):
             if detected_radical:
                 print(f"Detected radical: {detected_radical}")
 
+            print(datetime.datetime.now().strftime("%H:%M:%S.%f"))
+            # Sleep so websocket task can run
+            await asyncio.sleep(0.1)
             print()
-            await asyncio.sleep(0.4)
 
 def main():
     game = RadicalTileGame()
